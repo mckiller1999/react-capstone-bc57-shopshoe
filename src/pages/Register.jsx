@@ -1,6 +1,7 @@
-import { Field, useFormik } from "formik";
+import { ErrorMessage, useFormik } from "formik";
 import React from "react";
-import * as Yup from 'yup';
+import * as yup from "yup";
+import { http } from "../utils/Config";
 
 const Register = () => {
 
@@ -18,59 +19,72 @@ const Register = () => {
         phone:'',
         gender:'',
       },
-      validationSchema: Yup.object({
-        email: Yup.string().email('Invalid email').required('Email is required'),
-        password: Yup.string().required('Password is required'),
-        passwordConfirm: Yup.string().required('Confirm password is required'),
-        name: Yup.string().required('Name is required'),
-        phone: Yup.string().required('Phone is required'),
-        gender: Yup.boolean().required('Gender is required')
+      validationSchema: yup.object({
+        email: yup.string().email('Invalid email').required('Email is required'),
+        password: yup.string().required('Password is required'),
+        passwordConfirm: yup.string().required('Confirm password is required'),
+        name: yup.string().required('Name is required'),
+        phone: yup.string().required('Phone is required'),
+        gender: yup.boolean().required('Gender is required')
       }),
       // submit form to BE
-      onSubmit: values => {
+      onSubmit: async (values) => {
         console.log('validate')
-        alert(JSON.stringify(values, null, 2));
+        // alert(JSON.stringify(values, null, 2));
+        
+          try {
+            let res = await http.post('Users/signup',values);
+            alert(res.data.message)
+            console.log(res)
+          } catch (err) {
+            alert(err)
+          }       
       }
-
     });
+
 
     // render form and use formik & yup
   return <div className="container-sm">Register
-       <form action="" className="row g-3" onSubmit={formik.handleSubmit} noValidate>
-       <div>
-      <label className="form-label mb-1">Email address</label>
-      <input className="form-control" type="email" placeholder="email@gmail.com" name="email" onChange={formik.handleChange} value={formik.values.email} required></input>
-      {/* {formik.errors.email && formik.touched.email && (<div className="invalid-feedback">{formik.errors.email}</div>)} */}
-    </div>
-    <div>
-      <label className="form-label mb-1">Password</label>
-      <input className="form-control" type="password" placeholder="password" name="password" required onChange={formik.handleChange} value={formik.values.password} ></input>
-    </div>
-    <div>
-      <label className="form-label mb-1">Password confirm</label>
-      <input className="form-control" type="password" placeholder="Password confirm" name="passwordConfirm" required onChange={formik.handleChange} value={formik.values.passwordConfirm}></input>
-    </div>
-    <div>
-      <label className="form-label mb-1">Name</label>
-      <input className="form-control" type="text" placeholder="Name" name="name" required onChange={formik.handleChange} value={formik.values.name}></input>
-    </div>
-    <div>
-      <label className="form-label mb-1">Phone</label>
-      <input className="form-control" type="tel" placeholder="Phone" name="phone" required onChange={formik.handleChange} value={formik.values.phone}></input>
-    </div>
-    <div>
-      <label className="form-label mb-1">Gender</label>
-      <div className="form-check">
-        <input className="form-check-input" type="radio" name="gender" value="male" onChange={formik.handleChange}></input>
-        <label className="form-check-label">Male</label>
-      </div>
-      <div className="form-check">
-        <input className="form-check-input" type="radio" name="gender" value="female" onChange={formik.handleChange}></input>
-        <label className="form-check-label">Female</label>
-      </div>
-      <input type="submit" className="btn btn-primary" value="Submit"></input>
-    </div>
-        </form>  
+               <form action="" className="row g-3" onSubmit={formik.handleSubmit} noValidate>
+               <div>
+              <label className="form-label mb-1">Email address</label>
+              <input className="form-control" type="email" placeholder="email@gmail.com" name="email" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} required></input>
+              {formik.errors.email && formik.touched.email ? (<div className="text-danger">{formik.errors.email}</div>) : null} 
+              
+            </div>
+            <div>
+              <label className="form-label mb-1">Password</label>
+              <input className="form-control" type="password" placeholder="password" name="password" required onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} ></input>
+              {formik.errors.password && formik.touched.password ? (<div className="text-danger">{formik.errors.password}</div>) : null} 
+            </div>
+            <div>
+              <label className="form-label mb-1">Password confirm</label>
+              <input className="form-control" type="password" placeholder="Password confirm" name="passwordConfirm" required onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.passwordConfirm}></input>
+              {formik.errors.passwordConfirm && formik.touched.passwordConfirm ? (<div className="text-danger">{formik.errors.passwordConfirm}</div>) : null} 
+            </div>
+            <div>
+              <label className="form-label mb-1">Name</label>
+              <input className="form-control" type="text" placeholder="Name" name="name" required onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.name}></input>
+              {formik.errors.name && formik.touched.name ? (<div className="text-danger">{formik.errors.name}</div>) : null} 
+            </div>
+            <div>
+              <label className="form-label mb-1">Phone</label>
+              <input className="form-control" type="tel" placeholder="Phone" name="phone" required onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone}></input>
+              {formik.errors.phone && formik.touched.phone ? (<div className="text-danger">{formik.errors.phone}</div>) : null} 
+            </div>
+            <div>
+              <label className="form-label mb-1">Gender</label>
+              <div className="form-check">
+                <input className="form-check-input" type="radio" name="gender" value={true} onChange={formik.handleChange} checked="checked"></input>
+                <label className="form-check-label">Male</label>
+              </div>
+              <div className="form-check">
+                <input className="form-check-input" type="radio" name="gender" value={false} onChange={formik.handleChange}></input>
+                <label className="form-check-label">Female</label>
+              </div>
+              <button type="submit" className="btn btn-primary" value="Submit">Submit</button>
+            </div>
+                </form>  
   </div>;
 };
 
