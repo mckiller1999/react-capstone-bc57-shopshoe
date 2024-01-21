@@ -1,9 +1,16 @@
 import { NavLink } from "react-router-dom";
 import useGetAPI from "../components/CustomeHook/useGetAPI";
+import { store } from "../redux/store";
+import { addShoeToCart } from "../redux/actions/CartActions";
+import { connect, useDispatch } from "react-redux";
 
-const Home = () => {
+const Home = (props) => {
   const data = useGetAPI("https://shop.cyberlearn.vn/api/Product");
   const arrProd = data.content;
+  console.log(arrProd)
+
+  // const dispatch = useDispatch()
+
   return (
     <div className="container">
       <h1 className="text-center">Home pages</h1>
@@ -24,6 +31,7 @@ const Home = () => {
                     <NavLink className="btn btn-dark" to={`/detail/${prod.id}`}>
                       View detail
                     </NavLink>
+                    <button type="button" className="btn btn-primary m-3" onClick={()=>(props.addShoeToCart(prod))}>Add to cart</button>
                   </div>
                 </div>
               </div>
@@ -35,4 +43,12 @@ const Home = () => {
   );
 };
 
-export default Home;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addShoeToCart: (shoe) => {
+      dispatch(addShoeToCart(shoe))
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Home);

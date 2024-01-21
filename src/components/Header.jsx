@@ -83,6 +83,8 @@ const Header = () => {
                   className="nav-link active "
                   aria-current="page"
                   to="cart"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#staticBackdrop"
                 >
                   Cart (0)
                 </NavLink>
