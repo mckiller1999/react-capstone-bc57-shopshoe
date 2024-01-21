@@ -52,6 +52,9 @@ const Register = () => {
             value={formik.values.email}
             required
           ></input>
+          <p className="text-danger">
+            {formik.errors.email && formik.errors.email}
+          </p>
           {/* {formik.errors.email && formik.touched.email && (<div className="invalid-feedback">{formik.errors.email}</div>)} */}
         </div>
         <div>
@@ -65,6 +68,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.password}
           ></input>
+          <p className="text-danger">
+            {formik.errors.password && formik.errors.password}
+          </p>
         </div>
         <div>
           <label className="form-label mb-1">Password confirm</label>
@@ -77,6 +83,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.passwordConfirm}
           ></input>
+          <p className="text-danger">
+            {formik.errors.passwordConfirm && formik.errors.passwordConfirm}
+          </p>
         </div>
         <div>
           <label className="form-label mb-1">Name</label>
@@ -89,6 +98,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.name}
           ></input>
+          <p className="text-danger">
+            {formik.errors.name && formik.errors.name}
+          </p>
         </div>
         <div>
           <label className="form-label mb-1">Phone</label>
@@ -101,6 +113,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.phone}
           ></input>
+          <p className="text-danger">
+            {formik.errors.phone && formik.errors.phone}
+          </p>
         </div>
         <div className="form-group">
           <label className="form-label mb-1">Gender</label>
