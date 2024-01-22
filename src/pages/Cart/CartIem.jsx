@@ -1,13 +1,13 @@
 import React from 'react';
 
-function CartIem(cartItem) {
+function CartIem({item}) {
     return (
         <div className='container row border'>
-            <img className='col-md-3' src='https://www.w3schools.com/images/w3schools_green.jpg' alt=''/>
+            <img className='col-md-3' src={item.image} alt=''/>
             <div className='col-md-9'>
             <div className='row align-items-center mb-2'>
-                <h4 className='col-md-6 text text-start'>NikeAirMax</h4>
-                <p className='col-md-6 text-end'>$455</p>
+                <h4 className='col-md-6 text text-start'>{item.name}</h4>
+                <p className='col-md-6 text-end'>{item.price}</p>
             </div>
             <div className='row border'>
             <div className='row col align-items-center'>

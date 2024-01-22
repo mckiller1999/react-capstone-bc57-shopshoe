@@ -3,9 +3,13 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { history } from "../index";
 import { useFormik } from "formik";
+import CartIem from "../pages/Cart/CartIem";
 
 const Header = () => {
   const { userLogin } = useSelector((state) => state.userReducer);
+  const cartList = useSelector((state)=>state.cartReducer)
+  console.log("cartShoes",cartList.cartShoes)
+  
   const formSearch = useFormik({
     initialValues: {
       keyword: "",
@@ -79,15 +83,15 @@ const Header = () => {
                 })()}
               </li>
               <li className="nav-item">
-                <NavLink
-                  className="nav-link active "
-                  aria-current="page"
-                  to="cart"
-                  data-bs-toggle="modal" 
-                  data-bs-target="#staticBackdrop"
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasScrolling"
+                  aria-controls="offcanvasScrolling"
                 >
-                  Cart (0)
-                </NavLink>
+                  demo cart
+                </button>
               </li>
 
               {/* <div>
@@ -137,8 +141,40 @@ const Header = () => {
           </div>
         </div>
       </nav>
+
+      <div
+        class="offcanvas offcanvas-start"
+        data-bs-scroll="true"
+        data-bs-backdrop="false"
+        tabindex="-1"
+        id="offcanvasScrolling"
+        aria-labelledby="offcanvasScrollingLabel"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasRightLabel">
+            My order
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="offcanvas-body">
+          <h5 className="mb-4">Order summary</h5>
+          
+
+          <div className="container">
+            <h5>My order</h5>
+            {cartList.cartShoes.map((item)=>(
+            <CartIem key={item.id} item={item}/>           
+          ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Header;
+export default Header
