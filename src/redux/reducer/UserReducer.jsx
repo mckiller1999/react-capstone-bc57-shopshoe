@@ -6,6 +6,13 @@ let userLoginDefault = {
   email: "",
   accessToken: "",
 };
+let userRegisterDefault = {
+  email: "string",
+  password: "string",
+  name: "string",
+  gender: true,
+  phone: "string",
+};
 
 if (localStorage.getItem("userLogin")) {
   userLoginDefault = JSON.parse(localStorage.getItem("userLogin"));
@@ -14,6 +21,7 @@ if (localStorage.getItem("userLogin")) {
 const initialState = {
   userProfile: {},
   userLogin: userLoginDefault,
+  userRegister: userRegisterDefault,
 };
 
 const UserReducer = createSlice({
@@ -26,6 +34,9 @@ const UserReducer = createSlice({
     getProfileAction: (state, action) => {
       state.userProfile = action.payload;
     },
+    registerAction: (state, action) => {
+      state.userRegister = action.payload;
+    },
     logoutAction: (state) => {
       state.userProfile = {};
       state.userLogin = { email: "", accessToken: "" };
@@ -33,7 +44,7 @@ const UserReducer = createSlice({
   },
 });
 
-export const { loginAction, getProfileAction, logoutAction } =
+export const { loginAction, getProfileAction, registerAction, logoutAction } =
   UserReducer.actions;
 
 export default UserReducer.reducer;
@@ -53,6 +64,23 @@ export const loginApiAction = (userLogin) => {
     } catch (err) {
       if (err.response?.status === 404) {
         alert("wrong email or pass, please try again");
+      }
+    }
+  };
+};
+export const registerApiAction = (userRegister) => {
+  return async (dispatch) => {
+    try {
+      const res = await http.post("Users/signup", userRegister);
+
+      localStorage.setItem(TOKEN, res.data.content.accessToken);
+      localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
+      const action = registerAction(res.data.content);
+      dispatch(action);
+      history.push("/login");
+    } catch (err) {
+      if (err.response?.status === 404) {
+        alert("something wrong please try again");
       }
     }
   };

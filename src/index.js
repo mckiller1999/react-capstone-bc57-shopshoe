@@ -13,11 +13,15 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
-import Cart from "./pages/Cart";
+import Cart from "./pages/Cart/Cart";
 import Detail from "./pages/Detail";
 import Search from "./pages/Search";
 
+
+
+
 export const history = createBrowserHistory();
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
