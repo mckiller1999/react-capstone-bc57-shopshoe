@@ -8,7 +8,7 @@ import Logout from "./Logout";
 
 const Profile = () => {
   const { userProfile } = useSelector((state) => state.userReducer);
-  //console.log(userProfile);
+  console.log(userProfile);
 
   const dispatch = useDispatch();
   const getProfileApi = async () => {

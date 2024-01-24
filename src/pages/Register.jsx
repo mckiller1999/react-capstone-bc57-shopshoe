@@ -1,6 +1,9 @@
-import { Field, useFormik } from "formik";
+import { ErrorMessage, useFormik } from "formik";
 import React from "react";
-import * as Yup from "yup";
+import * as yup from "yup";
+import { useDispatch } from "react-redux";
+import { http } from "../utils/Config";
+import { registerApiAction } from "../redux/reducer/UserReducer";
 
 const Register = () => {
   // const signupSchema = Yup.object().shape({
@@ -8,6 +11,7 @@ const Register = () => {
   // })
 
   // get form value
+  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -17,21 +21,23 @@ const Register = () => {
       phone: "",
       gender: "",
     },
-    validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email").required("Email is required"),
-      password: Yup.string().required("Password is required"),
-      passwordConfirm: Yup.string().required("Confirm password is required"),
-      name: Yup.string().required("Name is required"),
-      phone: Yup.string().required("Phone is required"),
-      gender: Yup.boolean().required("Gender is required"),
+    validationSchema: yup.object({
+      email: yup.string().email("Invalid email").required("Email is required"),
+      password: yup.string().required("Password is required"),
+      passwordConfirm: yup.string().required("Confirm password is required"),
+      name: yup.string().required("Name is required"),
+      phone: yup.string().required("Phone is required"),
+      gender: yup.boolean().required("Gender is required"),
     }),
     // submit form to BE
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
+
+    onSubmit: async (values) => {
+      const action = registerApiAction(values);
+      dispatch(action);
     },
   });
 
-  // render form and use formik & Yup
+  // render form and use formik & yup
   return (
     <div className="container-sm">
       Register
@@ -49,13 +55,13 @@ const Register = () => {
             placeholder="email@gmail.com"
             name="email"
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             value={formik.values.email}
             required
           ></input>
-          <p className="text-danger">
-            {formik.errors.email && formik.errors.email}
-          </p>
-          {/* {formik.errors.email && formik.touched.email && (<div className="invalid-feedback">{formik.errors.email}</div>)} */}
+          {formik.errors.email && formik.touched.email ? (
+            <div className="text-danger">{formik.errors.email}</div>
+          ) : null}
         </div>
         <div>
           <label className="form-label mb-1">Password</label>
@@ -66,11 +72,12 @@ const Register = () => {
             name="password"
             required
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             value={formik.values.password}
           ></input>
-          <p className="text-danger">
-            {formik.errors.password && formik.errors.password}
-          </p>
+          {formik.errors.password && formik.touched.password ? (
+            <div className="text-danger">{formik.errors.password}</div>
+          ) : null}
         </div>
         <div>
           <label className="form-label mb-1">Password confirm</label>
@@ -81,11 +88,12 @@ const Register = () => {
             name="passwordConfirm"
             required
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             value={formik.values.passwordConfirm}
           ></input>
-          <p className="text-danger">
-            {formik.errors.passwordConfirm && formik.errors.passwordConfirm}
-          </p>
+          {formik.errors.passwordConfirm && formik.touched.passwordConfirm ? (
+            <div className="text-danger">{formik.errors.passwordConfirm}</div>
+          ) : null}
         </div>
         <div>
           <label className="form-label mb-1">Name</label>
@@ -96,11 +104,12 @@ const Register = () => {
             name="name"
             required
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             value={formik.values.name}
           ></input>
-          <p className="text-danger">
-            {formik.errors.name && formik.errors.name}
-          </p>
+          {formik.errors.name && formik.touched.name ? (
+            <div className="text-danger">{formik.errors.name}</div>
+          ) : null}
         </div>
         <div>
           <label className="form-label mb-1">Phone</label>
@@ -111,13 +120,14 @@ const Register = () => {
             name="phone"
             required
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             value={formik.values.phone}
           ></input>
-          <p className="text-danger">
-            {formik.errors.phone && formik.errors.phone}
-          </p>
+          {formik.errors.phone && formik.touched.phone ? (
+            <div className="text-danger">{formik.errors.phone}</div>
+          ) : null}
         </div>
-        <div className="form-group">
+        <div>
           <label className="form-label mb-1">Gender</label>
           <div className="form-check">
             <input
@@ -126,6 +136,7 @@ const Register = () => {
               name="gender"
               value={true}
               onChange={formik.handleChange}
+              checked="checked"
             ></input>
             <label className="form-check-label">Male</label>
           </div>
@@ -139,9 +150,7 @@ const Register = () => {
             ></input>
             <label className="form-check-label">Female</label>
           </div>
-        </div>
-        <div className="form-group">
-          <button type="submit" className="btn btn-primary" value="Gửi">
+          <button type="submit" className="btn btn-primary" value="Submit">
             Submit
           </button>
         </div>
