@@ -13,6 +13,9 @@ import { http } from "../utils/Config";
 const Profile = () => {
   const { userProfile } = useSelector((state) => state.userReducer);
   // console.log("userProfile", userProfile);
+  
+  let [orderHistory, setOrderHistory] = useState()
+  console.log("orderHistory", orderHistory)
 
   
   const formik = useFormik ({
@@ -38,18 +41,23 @@ const Profile = () => {
       try {
         let res = await http.post('Users/updateProfile',values)
         alert(res.data.content)
-            console.log(res)
+            // console.log(res)
       } catch (err) {
         alert(err)
       }       
     }
   });
-  
-  
-// console.log('userProfile', userProfile);
-// console.log('initialValues', formik.values);
-console.log("userProfile.gender", formik.values.gender)
 
+  const getOrderHistory = async () => {
+    try {
+      let res = await http.post('Users/getProfile')
+      console.log(res)
+      setOrderHistory(res.data.content.ordersHistory)   
+    } catch (err) {
+      alert(err)
+    }
+  }
+  
 
   const dispatch = useDispatch();
   const getProfileApi = async () => {
@@ -61,6 +69,7 @@ console.log("userProfile.gender", formik.values.gender)
   };
   useEffect(() => {
     getProfileApi();
+    getOrderHistory()
   }, []);
   return (
     <div className="container">
@@ -107,44 +116,63 @@ console.log("userProfile.gender", formik.values.gender)
       <button className="btn btn-danger" onClick={handleLogout}>
         Logout
       </button>
+      
       <nav className="mt-5">
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
-    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
+    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Order History</button>
+    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Favourite</button>
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
   <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
   <table class="table">
   <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
+  <tr>
+      {/* <th scope="col">id</th> */}
+      <th scope="col">image</th>
+      <th scope="col">name</th>
+      <th scope="col">price</th>
+      <th scope="col">quantity</th>
+      <th scope="col">total</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-  </tbody>
+  {orderHistory?.map((item)=> {
+    
+    return item.orderDetail.map((item)=>{
+      console.log("orderDetailItem", item)
+      const totalAmount = item.price * item.quantity
+      return (       
+        <tbody>
+  <tr>
+    {/* <th scope="row">{item.name}</th> */}
+    <td><img src={item.image} width={70}/></td>
+    <td>{item.name}</td>
+    <td>{item.price}</td>
+    <td>{item.quantity}</td>
+    <td>{totalAmount}</td>
+  </tr>
+</tbody>
+)
+    })
+  
+
+  })}
 </table>
   </div>
   <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
   <table class="table">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
+      <th scope="col">id</th>
+      <th scope="col">image</th>
+      <th scope="col">name</th>
+      <th scope="col">price</th>
+      <th scope="col">quantity</th>
+      <th scope="col">total</th>
     </tr>
   </thead>
-  <tbody>
+  {/* {orderHistory?.map((item)=> {
+    <tbody>
     <tr>
       <th scope="row">1</th>
       <td>Mark</td>
@@ -152,6 +180,8 @@ console.log("userProfile.gender", formik.values.gender)
       <td>@mdo</td>
     </tr>
   </tbody>
+  })} */}
+  
 </table>
   </div>
 </div>
