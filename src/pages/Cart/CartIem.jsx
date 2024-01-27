@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { decreaseItem, increaseItem } from '../../redux/reducer/CartReducer';
+import { decreaseItem, increaseItem, removeItem } from '../../redux/reducer/CartReducer';
 
 function CartIem({item}) {
     let dispatch = useDispatch()
@@ -10,7 +10,7 @@ function CartIem({item}) {
             <img className='col-md-3' src={item.image} alt=''/>
             <div className='col-md-9'>
             <div className='row align-items-center mb-2'>
-                <h4 className='col-md-6 text text-start'>{item.name}</h4>
+                <h5 className='col-md-6 text text-start'>{item.name}</h5>
                 <p className='col-md-6 text-end'>{totalPrice}</p>
             </div>
             <div className='row border'>
@@ -21,7 +21,7 @@ function CartIem({item}) {
             </div>
             <div className='row col'>
                 <button type="button" className='btn btn-outline-info col'>Edit</button>
-                <button type="button" className='btn btn-outline-danger col'>Delete</button>
+                <button type="button" className='btn btn-outline-danger col' onClick={()=> dispatch(removeItem(item.id))}>Delete</button>
             </div>
             </div>
             </div>

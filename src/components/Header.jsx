@@ -1,15 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { history } from "../index";
 import { useFormik } from "formik";
 import CartIem from "../pages/Cart/CartIem";
+import { http } from "../utils/Config";
 
 const Header = () => {
   const { userLogin } = useSelector((state) => state.userReducer);
   const cartList = useSelector((state)=>state.cartReducer)
   console.log("cartShoes",cartList.cartShoes)
+
+  const orderList = cartList.cartShoes.map(({id,quantity })=>({productId: id.toString(), quantity}))
+  console.log("orderList",orderList)
+
+  let submitOrder = {
+    orderDetail: orderList,
+    email: userLogin.email,
+  }
+
+  console.log("orderDetail", submitOrder.orderDetail)
+  console.log("submitOrder",submitOrder)
   
+  let totalCartAmt = 0
+  cartList.cartShoes.forEach((item) => {
+      return totalCartAmt += item.price*item.quantity
+  }, 0)
+  console.log("totalCartAmt", totalCartAmt)
+
+
+  const submitOrderCart = async (submitOrder) => {
+        try {
+            const res = await http.post("Users/order",submitOrder);
+            console.log(res)
+            alert(res.data.content)
+        } catch (err) {
+            alert(err)
+        }
+    }
+
+
+
+
   const formSearch = useFormik({
     initialValues: {
       keyword: "",
@@ -19,6 +51,7 @@ const Header = () => {
       //console.log(keyword);
     },
   });
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark ">
@@ -92,51 +125,7 @@ const Header = () => {
                 >
                   demo cart
                 </button>
-              </li>
-
-              {/* <div>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="#">
-                  Link
-                </NavLink>
-              </li>
-              <li className="nav-item dropdown">
-                <NavLink
-                  className="nav-link dropdown-toggle"
-                  to="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </NavLink>
-                <ul className="dropdown-menu">
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Action
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Another action
-                    </NavLink>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Something else here
-                    </NavLink>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link disabled" aria-disabled="true">
-                  Disabled
-                </NavLink>
-              </li>
-              </div> */}
+              </li>              
             </ul>
           </div>
         </div>
@@ -162,14 +151,14 @@ const Header = () => {
           ></button>
         </div>
         <div class="offcanvas-body">
-          <h5 className="mb-4">Order summary</h5>
-          
-
+          <h5 className="mb-4">Order summary</h5>          
           <div className="container">
             <h5>My order</h5>
             {cartList.cartShoes.map((item)=>(
             <CartIem key={item.id} item={item}/>           
           ))}
+          <h5 className="mt-2">Total: ${totalCartAmt} </h5>
+          <button className="btn btn-success" onClick={()=>{submitOrderCart(submitOrder)}}>Submit order</button>
           </div>
         </div>
       </div>
