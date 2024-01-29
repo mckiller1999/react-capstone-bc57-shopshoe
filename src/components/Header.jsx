@@ -1,12 +1,74 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { history } from "../index";
 import { useFormik } from "formik";
+import { useDispatch } from "react-redux";
 import CartIem from "../pages/Cart/CartIem";
+import { http } from "../utils/Config";
+import { saveOrder } from "../redux/reducer/CartReducer";
+import { Avatar, Badge, Space } from "antd";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Button, message } from "antd";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const { userLogin } = useSelector((state) => state.userReducer);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const key = "updatable";
+
+  const cartList = useSelector((state) => state.cartReducer);
+  console.log("cartShoes", cartList.cartShoes);
+
+  const orderList = cartList.cartShoes.map(({ id, quantity }) => ({
+    productId: id.toString(),
+    quantity,
+  }));
+
+  //console.log("orderList", orderList);
+
+  let submitOrder = {
+    orderDetail: orderList,
+    email: userLogin.email,
+  };
+
+  // console.log("orderDetail", submitOrder.orderDetail);
+  // console.log("submitOrder", submitOrder);
+
+  let totalCartAmt = 0;
+  cartList.cartShoes.forEach((item) => {
+    return (totalCartAmt += item.price * item.quantity);
+  }, 0);
+  //console.log("totalCartAmt", totalCartAmt);
+  const openMessage = (data) => {
+    messageApi.open({
+      key,
+      type: "loading",
+      content: "Loading...",
+    });
+    setTimeout(() => {
+      messageApi.open({
+        key,
+        type: "success",
+        content: data,
+        duration: 2,
+      });
+    }, 1000);
+  };
+
+  const submitOrderCart = async (submitOrder) => {
+    try {
+      const res = await http.post("Users/order", submitOrder);
+      console.log(res);
+      openMessage(res.data.content);
+
+      dispatch(saveOrder(submitOrder.orderDetail));
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   const formSearch = useFormik({
     initialValues: {
       keyword: "",
@@ -16,9 +78,14 @@ const Header = () => {
       //console.log(keyword);
     },
   });
+
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark ">
+      {contextHolder}
+      <nav
+        className="navbar navbar-expand-lg  "
+        style={{ backgroundColor: "#f5f5f5" }}
+      >
         <div className="container-fluid px-5 py-2">
           <NavLink className="navbar-brand" to="/">
             ShopShoe
@@ -36,7 +103,7 @@ const Header = () => {
               placeholder="Search"
               aria-label="Search"
             />
-            <button className="btn btn-outline-success" type="submit">
+            <button className="btn btn-outline-primary" type="submit">
               Search
             </button>
           </form>
@@ -68,7 +135,7 @@ const Header = () => {
                   if (userLogin.email !== "") {
                     return (
                       <NavLink className="nav-link" to="/profile">
-                        welcome {userLogin.email}
+                        {userLogin.email}
                       </NavLink>
                     );
                   } else
@@ -80,60 +147,19 @@ const Header = () => {
                 })()}
               </li>
               <li className="nav-item">
-                <button
-                  className="btn btn-primary"
-                  type="button"
+                <NavLink
+                  className="nav-link"
                   data-bs-toggle="offcanvas"
                   data-bs-target="#offcanvasScrolling"
                   aria-controls="offcanvasScrolling"
                 >
-                  demo cart
-                </button>
-              </li>
-
-              {/* <div>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="#">
-                  Link
+                  <Badge count={cartList.cartCount}>
+                    <ShoppingCartOutlined
+                      style={{ fontSize: 30, color: "#000" }}
+                    />
+                  </Badge>
                 </NavLink>
               </li>
-              <li className="nav-item dropdown">
-                <NavLink
-                  className="nav-link dropdown-toggle"
-                  to="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </NavLink>
-                <ul className="dropdown-menu">
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Action
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Another action
-                    </NavLink>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink className="dropdown-item" to="#">
-                      Something else here
-                    </NavLink>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link disabled" aria-disabled="true">
-                  Disabled
-                </NavLink>
-              </li>
-              </div> */}
             </ul>
           </div>
         </div>
@@ -147,7 +173,7 @@ const Header = () => {
         id="offcanvasScrolling"
         aria-labelledby="offcanvasScrollingLabel"
       >
-        <div class="offcanvas-header">
+        <div class="offcanvas-header" style={{ backgroundColor: "#f5f5f5" }}>
           <h5 class="offcanvas-title" id="offcanvasRightLabel">
             My order
           </h5>
@@ -158,14 +184,20 @@ const Header = () => {
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body">
-          <h5 className="mb-4">Order summary</h5>
-          <CartIem />
-
+        <div class="offcanvas-body" style={{ backgroundColor: "#f5f5f5" }}>
           <div className="container">
-            <h5>My order</h5>
-            <h5 className="mb-4">Order summary</h5>
-            <CartIem />
+            {cartList.cartShoes.map((item) => (
+              <CartIem key={item.id} item={item} />
+            ))}
+            <h5 className="mt-2">Total: ${totalCartAmt} </h5>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                submitOrderCart(submitOrder);
+              }}
+            >
+              Submit order
+            </button>
           </div>
         </div>
       </div>

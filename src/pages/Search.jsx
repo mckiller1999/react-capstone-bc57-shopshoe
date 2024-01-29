@@ -19,8 +19,8 @@ const Search = () => {
     getProdByKeyword();
   }, [key]);
   return (
-    <div className="container">
-      <h1 className="text-center">Search</h1>
+    <div className="container my-3">
+      <h1 className="text-start">Resul for: {key}</h1>
       <div className="row">
         {arrProd?.map((prod, index) => {
           return (

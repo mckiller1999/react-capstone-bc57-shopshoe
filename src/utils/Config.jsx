@@ -33,13 +33,9 @@ http.interceptors.response.use(
   (err) => {
     if (err.response?.status === 404) {
     } else if (err.response?.status === 401) {
-      alert("please login to go to profile");
-
-      history.push("/login-demo");
+      history.push("/login");
     } else if (err.response?.status === 403) {
     }
     return Promise.reject(err);
   }
 );
-
-

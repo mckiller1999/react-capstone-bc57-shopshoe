@@ -4,8 +4,10 @@ import { history } from "../../index";
 
 let userLoginDefault = {
   email: "",
+
   accessToken: "",
 };
+
 let userRegisterDefault = {
   email: "string",
   password: "string",
@@ -55,12 +57,14 @@ export const loginApiAction = (userLogin) => {
   return async (dispatch) => {
     try {
       const res = await http.post("Users/signin", userLogin);
+      //console.log(res.data.content);
 
       localStorage.setItem(TOKEN, res.data.content.accessToken);
       localStorage.setItem(USER_LOGIN, JSON.stringify(res.data.content));
+
       const action = loginAction(res.data.content);
       dispatch(action);
-      history.push("/profile");
+      history.push("/");
     } catch (err) {
       if (err.response?.status === 404) {
         alert("wrong email or pass, please try again");
@@ -109,7 +113,7 @@ export const logoutApiAction = () => {
       dispatch(logoutAction());
 
       // Chuyển hướng đến trang login hoặc trang chính (tùy thuộc vào yêu cầu của bạn)
-      history.push("/login-demo");
+      history.push("/login");
     } catch (err) {
       // Xử lý lỗi, nếu cần
       console.error(err);
