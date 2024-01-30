@@ -1,11 +1,21 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import useGetAPI from "../components/CustomeHook/useGetAPI";
 import { Button, message, Pagination, Select } from "antd";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/reducer/CartReducer";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import "./Home.css";
+import Slide from "@mui/material/Slide";
+import Paper from "@mui/material/Paper";
+import useWindowSize from "../components/CustomeHook/useWindowSize";
 
+// Khởi tạo AOS
+AOS.init();
+AOS.refresh();
 const Home = (props) => {
+  const windowSize = useWindowSize();
   const data = useGetAPI("https://shop.cyberlearn.vn/api/Product");
   const arrProd = data.content;
   const [selectedSize, setSelectedSize] = useState(null);
@@ -82,7 +92,7 @@ const Home = (props) => {
   };
 
   return (
-    <div className="pb-5">
+    <div className="">
       {contextHolder}
 
       <div className="">
@@ -140,64 +150,94 @@ const Home = (props) => {
           </button>
         </div>
       </div>
-      <div className="container">
-        <div className="row ">
-          {currentItems.map((prod, index) => {
-            return (
-              <div
-                className="col-12 col-lg-4"
-                key={index}
-                style={{ textDecoration: "none" }}
-              >
-                <div className="conatiner m-4">
-                  <div className="card p-4">
-                    <NavLink to={`/detail/${prod.id}`}>
-                      <img
-                        className="card-img-top"
-                        src={prod.image}
-                        alt={prod.name}
-                      />
-                    </NavLink>
-
-                    <div className="card-body">
-                      <div className="">
-                        <h5 className="card-title">{prod.price}$</h5>
-                        <p className="card-text"> {prod.name}</p>
-                        <Select
-                          showSearch
-                          placeholder="size"
-                          optionFilterProp="children"
-                          onChange={handleSizeChange}
-                          onSearch={onSearch}
-                          filterOption={filterOption}
-                          options={sizeOptions}
-                        />
-                      </div>
-
-                      <div className="d-flex justify-content-start align-items-center mt-2">
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={() => handleAddToCart(prod)}
-
-                          // Disable button if no size is selected
+      <div className=" d-flex justify-content-between align-items-center">
+        <div className=" d-flex flex-column justify-content-center align-items-center p-0">
+          <img
+            src={process.env.PUBLIC_URL + "/img/demobaner3.png"}
+            alt="..."
+            height={"200%"}
+          />
+          <img
+            src={process.env.PUBLIC_URL + "/img/demobanner4.png"}
+            alt="..."
+            height={"200%"}
+          />
+        </div>
+        <div className="container">
+          <Pagination
+            current={currentPage}
+            pageSize={itemsPerPage}
+            total={(arrProd || []).length}
+            onChange={handleChangePage}
+          />
+          <div className="row ">
+            {currentItems.map((prod, index) => {
+              return (
+                <div
+                  data-aos="fade-up"
+                  data-aos-delay="300"
+                  className="col-12 col-lg-4"
+                  key={index}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="conatiner m-4">
+                    <div className="card p-4">
+                      <NavLink
+                        to={`/detail${
+                          windowSize.width >= 992 ? "" : "mobile"
+                        }/${prod.id}`}
+                      >
+                        <Slide
+                          direction="up"
+                          in={true}
+                          mountOnEnter
+                          unmountOnExit
                         >
-                          Add to cart
-                        </button>
+                          <Paper>
+                            <img
+                              className="card-img-top"
+                              src={prod.image}
+                              alt={prod.name}
+                              style={{ width: "100%", height: "auto" }}
+                            />
+                          </Paper>
+                        </Slide>
+                      </NavLink>
+
+                      <div className="card-body">
+                        <div className="">
+                          <h5 className="card-title">{prod.price}$</h5>
+                          <p className="card-text"> {prod.name}</p>
+                          <Select
+                            showSearch
+                            placeholder="size"
+                            optionFilterProp="children"
+                            onChange={handleSizeChange}
+                            onSearch={onSearch}
+                            filterOption={filterOption}
+                            options={sizeOptions}
+                          />
+                        </div>
+
+                        <div className="d-flex justify-content-start align-items-center mt-2">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => handleAddToCart(prod)}
+
+                            // Disable button if no size is selected
+                          >
+                            Add to cart
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-        <Pagination
-          current={currentPage}
-          pageSize={itemsPerPage}
-          total={(arrProd || []).length}
-          onChange={handleChangePage}
-        />
       </div>
     </div>
   );

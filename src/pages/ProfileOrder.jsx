@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-
+import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
 
 const ProfileOrder = ({ item, userProfile, index }) => {
   const [prodDetail, setProdDetail] = useState({});
-  //console.log(userProfile[index]);
-  //console.log(index);
-
   let idItem = item.productId;
   let quantity = item.quantity;
+  console.log(item, userProfile, index);
 
   const getProdId = async () => {
     const res = await axios({
@@ -17,9 +15,20 @@ const ProfileOrder = ({ item, userProfile, index }) => {
     });
     return setProdDetail(res.data.content);
   };
+
   useEffect(() => {
     getProdId();
   }, [idItem]);
+
+  // Kiểm tra userProfile có tồn tại và có đúng định dạng không
+  if (
+    !userProfile ||
+    !Array.isArray(userProfile) ||
+    index >= userProfile.length
+  ) {
+    return null; // hoặc có thể trả về một thành phần JSX khác để hiển thị thông báo hoặc trạng thái trống.
+  }
+
   // Khai báo biến để lưu trữ giá trị formattedDate
   let formattedDate = null;
 

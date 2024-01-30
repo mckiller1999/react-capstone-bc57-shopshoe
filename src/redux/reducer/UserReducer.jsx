@@ -64,7 +64,7 @@ export const loginApiAction = (userLogin) => {
 
       const action = loginAction(res.data.content);
       dispatch(action);
-      history.push("/");
+      history.push("/profile");
     } catch (err) {
       if (err.response?.status === 404) {
         alert("wrong email or pass, please try again");

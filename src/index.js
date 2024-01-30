@@ -15,34 +15,58 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Cart from "./pages/Cart/Cart";
 import Detail from "./pages/Detail";
+import useWindowSize from "./components/CustomeHook/useWindowSize";
 import Search from "./pages/Search";
-
-
-
+import DeviceTemplate from "./templates/DeviceTemplates";
+import HomeMobile from "./pages/HomeMobile";
+import SearchMobile from "./pages/SearchMobile";
+import DetailMobile from "./pages/DetailMobile";
 
 export const history = createBrowserHistory();
 
+const App = () => {
+  const windowSize = useWindowSize();
+
+  return (
+    <Provider store={store}>
+      <HistoryRouter history={history}>
+        <Routes>
+          <Route path="" element={<HomeTemplates />}>
+            <Route
+              index
+              element={
+                <DeviceTemplate
+                  Component={<Home />}
+                  MobileComponent={<HomeMobile />}
+                />
+              }
+            />
+
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="cart" element={<Cart />} />
+
+            {windowSize.width >= 992 ? (
+              <Route path="detail/:id" element={<Detail />} />
+            ) : (
+              <Route path="detailmobile/:id" element={<DetailMobile />} />
+            )}
+
+            <Route path="*" element={<Navigate to="" />} />
+          </Route>
+          {/* detail/:id */}
+          {/* Thêm route cho Search và SearchMobile */}
+          {windowSize.width >= 992 ? (
+            <Route path="search" element={<Search />} />
+          ) : (
+            <Route path="searchmobile" element={<SearchMobile />} />
+          )}
+        </Routes>
+      </HistoryRouter>
+    </Provider>
+  );
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <Provider store={store}>
-    <HistoryRouter history={history}>
-      <Routes>
-        <Route path="" element={<HomeTemplates />}>
-          <Route index element={<Home />} />
-
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="detail">
-            <Route path=":id" element={<Detail />}></Route>
-          </Route>
-
-          <Route path="*" element={<Navigate to="" />}></Route>
-          <Route path="search" element={<Search />} />
-        </Route>
-      </Routes>
-    </HistoryRouter>
-  </Provider>
-);
+root.render(<App />);

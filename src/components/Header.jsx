@@ -7,9 +7,9 @@ import { useDispatch } from "react-redux";
 import CartIem from "../pages/Cart/CartIem";
 import { http } from "../utils/Config";
 import { saveOrder } from "../redux/reducer/CartReducer";
-import { Avatar, Badge, Space } from "antd";
+import { Avatar, Badge, Space, message } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { Button, message } from "antd";
+import { Button } from "antd";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -26,21 +26,16 @@ const Header = () => {
     quantity,
   }));
 
-  //console.log("orderList", orderList);
-
   let submitOrder = {
     orderDetail: orderList,
     email: userLogin.email,
   };
 
-  // console.log("orderDetail", submitOrder.orderDetail);
-  // console.log("submitOrder", submitOrder);
-
   let totalCartAmt = 0;
   cartList.cartShoes.forEach((item) => {
     return (totalCartAmt += item.price * item.quantity);
   }, 0);
-  //console.log("totalCartAmt", totalCartAmt);
+
   const openMessage = (data) => {
     messageApi.open({
       key,
@@ -74,10 +69,13 @@ const Header = () => {
       keyword: "",
     },
     onSubmit: ({ keyword }) => {
-      history.push(`/search?keyword=${keyword}`);
-      //console.log(keyword);
+      history.push(
+        `/search${isMobileScreen ? "mobile" : ""}?keyword=${keyword}`
+      );
     },
   });
+
+  const isMobileScreen = window.innerWidth < 992;
 
   return (
     <div>
@@ -92,7 +90,7 @@ const Header = () => {
           </NavLink>
           <form
             onSubmit={formSearch.handleSubmit}
-            className="d-flex w-75 w-sm-100 "
+            className="d-flex w-75 "
             role="search"
           >
             <input
@@ -107,23 +105,11 @@ const Header = () => {
               Search
             </button>
           </form>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
+
           <div
             className="collapse navbar-collapse flex-grow-0"
             id="navbarSupportedContent"
           >
-            {/* search */}
-
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <NavLink className="nav-link active" aria-current="page" to="/">
@@ -166,25 +152,30 @@ const Header = () => {
       </nav>
 
       <div
-        class="offcanvas offcanvas-start"
+        className={`offcanvas offcanvas-start ${
+          isMobileScreen ? "searchmobile" : ""
+        }`}
         data-bs-scroll="true"
         data-bs-backdrop="false"
-        tabindex="-1"
+        tabIndex="-1"
         id="offcanvasScrolling"
         aria-labelledby="offcanvasScrollingLabel"
       >
-        <div class="offcanvas-header" style={{ backgroundColor: "#f5f5f5" }}>
-          <h5 class="offcanvas-title" id="offcanvasRightLabel">
+        <div
+          className="offcanvas-header"
+          style={{ backgroundColor: "#f5f5f5" }}
+        >
+          <h5 className="offcanvas-title" id="offcanvasRightLabel">
             My order
           </h5>
           <button
             type="button"
-            class="btn-close"
+            className="btn-close"
             data-bs-dismiss="offcanvas"
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body" style={{ backgroundColor: "#f5f5f5" }}>
+        <div className="offcanvas-body" style={{ backgroundColor: "#f5f5f5" }}>
           <div className="container">
             {cartList.cartShoes.map((item) => (
               <CartIem key={item.id} item={item} />

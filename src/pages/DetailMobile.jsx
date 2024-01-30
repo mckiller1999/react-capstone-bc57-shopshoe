@@ -25,7 +25,7 @@ const onSearch = (value) => {
 const filterOption = (input, option) =>
   (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
-const Detail = () => {
+const DetailMobile = () => {
   const [prodDetail, setProdDetail] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
   const handleSizeChange = (value) => {
@@ -152,19 +152,51 @@ const Detail = () => {
           {prodDetail.relatedProducts?.map((prod, index) => {
             return (
               <div
-                className="col-12 col-lg-4"
-                key={index}
                 data-aos="fade-up"
                 data-aos-delay="300"
+                className="d-flex my-2"
+                style={{ border: "1px solid #000", borderRadius: "20px" }}
+                key={index}
               >
-                <div className="card w-75 m-5" key={index}>
-                  <NavLink to={`/detail/${prod.id}`}>
-                    <img className="card-img-top" src={prod.image} alt="" />
+                <div className="d-flex p-4">
+                  <NavLink to={`/detail/${prod.id}`} className="h-50 card">
+                    <img
+                      className="card-img-top"
+                      src={prod.image}
+                      width={115}
+                      height={115}
+                      style={{ objectFit: "cover" }}
+                      alt="..."
+                    />
                   </NavLink>
-                  <div className="card-body">
-                    <p style={{ fontSize: 13 }}>{prod.name} </p>
-                    <p>{prod.price}$ </p>
-                    <p>{prod.description}</p>
+                  <div className="w-75 px-2">
+                    <div
+                      className="prod-info d-flex flex-column"
+                      style={{ justifyContent: "space-between" }}
+                    >
+                      <div>
+                        <h3>{prod.name}</h3>
+                        <p>{prod.description}</p>
+                      </div>
+                      <div className="text-end d-flex justify-content-between align-items-center">
+                        <Select
+                          showSearch
+                          placeholder="size"
+                          optionFilterProp="children"
+                          onChange={handleSizeChange}
+                          filterOption={filterOption}
+                          onSearch={onSearch}
+                          options={sizeOptions}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => handleAddToCart(prod)}
+                        >
+                          Add to cart
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -176,4 +208,4 @@ const Detail = () => {
   );
 };
 
-export default Detail;
+export default DetailMobile;

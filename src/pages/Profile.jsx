@@ -9,7 +9,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { http } from "../utils/Config";
 import ProfileOrder from "./ProfileOrder";
-
+import { submitOrder, saveOrder } from "../redux/reducer/CartReducer";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { message, Upload, Select, Empty, Pagination } from "antd";
 const getBase64 = (img, callback) => {
@@ -41,9 +41,6 @@ const Profile = () => {
   const [selectedGender, setSelectedGender] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-  const [currentPageData, setCurrentPageData] = useState([]);
 
   const handleGenderChange = (value) => {
     setSelectedGender(value);
@@ -103,25 +100,21 @@ const Profile = () => {
       //alert(JSON.stringify(values, null, 2));
       try {
         let res = await http.post("Users/updateProfile", values);
-        messageApi
-          .open({
-            type: "loading",
-            content: "Đang cập nhật mới thông tin",
-            duration: 2.5,
-          })
-          .then(() => message.success("thông tin đã được cập nhật", 2.5))
-          .then(() => message.info("thông tin đã được cập nhật", 2.5));
 
-        console.log(res);
+        dispatch(submitOrder(orderList)); // Gửi đơn hàng lên Redux
+        dispatch(saveOrder(res.data.content)); // Lưu thông tin đơn hàng sau khi gửi thành công
+
+        // Rest của mã xử lý sau khi gửi đơn hàng...
       } catch (err) {
         console.log(err);
       }
     },
   });
 
-  console.log("userProfile", userProfile);
-  console.log("initialValues", formik.values);
-  console.log("userProfile.gender", formik.values.gender);
+  // console.log("userProfile", userProfile);
+  // console.log("initialValues", formik.values);
+  // console.log("userProfile.gender", formik.values.gender);
+  // console.log(userProfile.ordersHistory);
 
   const dispatch = useDispatch();
   const getProfileApi = async () => {
@@ -141,29 +134,17 @@ const Profile = () => {
   }));
   console.log("orderList", orderList);
 
+  //console.log("orderDetail", submitOrder.orderDetail);
+  //console.log("submitOrder", submitOrder);
   let submitOrder = {
     orderDetail: orderList,
   };
-
-  console.log("orderDetail", submitOrder.orderDetail);
-  console.log("submitOrder", submitOrder);
-
   useEffect(() => {
     getProfileApi();
     setSelectedGender(userProfile.gender);
     setSelectedImageUrl(userProfile.avatar);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    setCurrentPageData(submitOrder.orderDetail.slice(startIndex, endIndex));
-  }, [
-    userProfile.gender,
-    userProfile.avatar,
-    currentPage,
-    submitOrder.orderDetail,
-  ]);
-  const handleChangePage = (page) => {
-    setCurrentPage(page);
-  };
+  }, [userProfile.gender, userProfile.avatar]);
+
   return (
     <div className="container">
       {contextHolder}
@@ -372,7 +353,7 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentPageData.map((item, index) => (
+                  {submitOrder.orderDetail.map((item, index) => (
                     <ProfileOrder
                       key={index}
                       userProfile={userProfile.ordersHistory}
@@ -391,12 +372,6 @@ const Profile = () => {
               tabIndex="0"
             ></div>
           </div>
-          <Pagination
-            current={currentPage}
-            pageSize={itemsPerPage}
-            total={(cartList.cartShoesHistory || []).length}
-            onChange={handleChangePage}
-          />
         </div>
       )}
     </div>

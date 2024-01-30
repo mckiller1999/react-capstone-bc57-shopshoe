@@ -78,7 +78,7 @@ const Login = () => {
 
         <div
           style={{ width: "35vw", height: "50vh" }}
-          className="d-none d-md-block"
+          className="d-none d-lg-block"
         >
           <img
             src={process.env.PUBLIC_URL + "/img/banner_register.jpg"}
